@@ -6,7 +6,7 @@ import QuizEngine from './components/QuizEngine';
 import AdminPublisher from './components/AdminPublisher';
 import ProgressBar from './components/ProgressBar';
 import CohortBadge from './components/CohortBadge';
-import Dashboard from './pages/Dashboard';
+import RewardSummary from './components/RewardSummary';
 
 function Placeholder({ text }) {
   return <div>{text}</div>;
@@ -23,7 +23,7 @@ export default function App() {
           <Route path="/learn" element={<Placeholder text="learn" />} />
           <Route path="/learn/:deptId" element={<MarkdownRenderer />} />
           <Route path="/quiz/:deptId" element={<QuizEngine />} />
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<RewardSummary />} />
           <Route path="/admin" element={<AdminPublisher />} />
           <Route path="/community" element={<Placeholder text="community" />} />
           <Route path="/blog" element={<Placeholder text="blog" />} />
