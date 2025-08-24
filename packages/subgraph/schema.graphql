@@ -1,0 +1,36 @@
+type ContentRootUpdated @entity {
+  id: ID!
+  root: Bytes!
+  uri: String!
+}
+
+type Enrolled @entity {
+  id: ID!
+  learner: Bytes!
+  cohortId: BigInt!
+}
+
+type Committed @entity {
+  id: ID!
+  learner: Bytes!
+  answerHash: Bytes!
+  deptId: BigInt!
+}
+
+type Revealed @entity {
+  id: ID!
+  learner: Bytes!
+  deptId: BigInt!
+}
+
+type ProgressAttested @entity {
+  id: ID!
+  learner: Bytes!
+  stateRoot: Bytes!
+}
+
+type Claimed @entity {
+  id: ID!
+  to: Bytes!
+  amount: BigInt!
+}

@@ -1,0 +1,15 @@
+{
+  "name": "subgraph",
+  "version": "1.0.0",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "create-local": "graph create lythera/bsc --node http://localhost:8020",
+    "deploy": "graph deploy lythera/bsc --ipfs http://localhost:5001 --node http://localhost:8020"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "^0.47.1",
+    "@graphprotocol/graph-ts": "^0.29.1",
+    "typescript": "^5.0.0"
+  }
+}

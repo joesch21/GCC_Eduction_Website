@@ -1,0 +1,12 @@
+{
+  "name": "lythera-ecosystem",
+  "private": true,
+  "workspaces": ["packages/*"],
+  "scripts": {
+    "dev": "yarn workspace frontend dev & yarn workspace subgraph codegen",
+    "build": "yarn workspaces foreach -pt run build",
+    "format": "echo format",
+    "lint": "echo lint",
+    "postinstall": "cd packages/contracts && forge install"
+  }
+}

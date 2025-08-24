@@ -1,0 +1,9 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+solc_version = "0.8.20"
+
+[dependencies]
+openzeppelin-contracts = { git = "https://github.com/OpenZeppelin/openzeppelin-contracts", tag = "v5.0.1" }
+forge-std = { git = "https://github.com/foundry-rs/forge-std", tag = "v1.5.4" }

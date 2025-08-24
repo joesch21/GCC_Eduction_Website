@@ -1,0 +1,39 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "name": "learner", "type": "address"},
+      {"indexed": false, "name": "cohortId", "type": "uint256"}
+    ],
+    "name": "Enrolled",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "name": "learner", "type": "address"},
+      {"indexed": false, "name": "answerHash", "type": "bytes32"},
+      {"indexed": false, "name": "deptId", "type": "uint256"}
+    ],
+    "name": "Committed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "name": "learner", "type": "address"},
+      {"indexed": false, "name": "deptId", "type": "uint256"}
+    ],
+    "name": "Revealed",
+    "type": "event"
+  },
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "name": "learner", "type": "address"},
+      {"indexed": false, "name": "stateRoot", "type": "bytes32"}
+    ],
+    "name": "ProgressAttested",
+    "type": "event"
+  }
+]

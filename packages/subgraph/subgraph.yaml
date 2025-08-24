@@ -1,0 +1,73 @@
+specVersion: 0.0.5
+schema:
+  file: ./schema.graphql
+dataSources:
+  - kind: ethereum
+    name: ContentRegistry
+    network: bsc
+    source:
+      address: "0xContentRegistry"
+      abi: ContentRegistry
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - ContentRootUpdated
+      abis:
+        - name: ContentRegistry
+          file: ./abis/ContentRegistry.json
+      eventHandlers:
+        - event: ContentRootUpdated(bytes32,string)
+          handler: handleContentRootUpdated
+      file: ./src/mappings/content.ts
+  - kind: ethereum
+    name: LearnerRegistry
+    network: bsc
+    source:
+      address: "0xLearnerRegistry"
+      abi: LearnerRegistry
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Enrolled
+        - Committed
+        - Revealed
+        - ProgressAttested
+      abis:
+        - name: LearnerRegistry
+          file: ./abis/LearnerRegistry.json
+      eventHandlers:
+        - event: Enrolled(address,uint256)
+          handler: handleEnrolled
+        - event: Committed(address,bytes32,uint256)
+          handler: handleCommitted
+        - event: Revealed(address,uint256)
+          handler: handleRevealed
+        - event: ProgressAttested(address,bytes32)
+          handler: handleProgressAttested
+      file: ./src/mappings/learner.ts
+  - kind: ethereum
+    name: LearnToEarnRewarder
+    network: bsc
+    source:
+      address: "0xRewarder"
+      abi: LearnToEarnRewarder
+      startBlock: 0
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.7
+      language: wasm/assemblyscript
+      entities:
+        - Claimed
+      abis:
+        - name: LearnToEarnRewarder
+          file: ./abis/LearnToEarnRewarder.json
+      eventHandlers:
+        - event: Claimed(address,uint256)
+          handler: handleClaimed
+      file: ./src/mappings/rewarder.ts

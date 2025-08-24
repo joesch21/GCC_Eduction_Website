@@ -1,0 +1,14 @@
+node_modules/
+.yarn/
+dist/
+build/
+.cache/
+out/
+lib/
+.DS_Store
+.env
+
+packages/contracts/lib/
+packages/contracts/out/
+packages/contracts/cache/
+packages/contracts/broadcast/

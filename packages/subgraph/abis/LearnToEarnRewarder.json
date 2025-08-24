@@ -1,0 +1,11 @@
+[
+  {
+    "anonymous": false,
+    "inputs": [
+      {"indexed": true, "name": "to", "type": "address"},
+      {"indexed": false, "name": "amount", "type": "uint256"}
+    ],
+    "name": "Claimed",
+    "type": "event"
+  }
+]
