@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 function shuffle(arr) {
@@ -12,7 +12,7 @@ function shuffle(arr) {
 
 export default function QuizEngine() {
   const { deptId } = useParams();
-  const [status, setStatus] = useState('loading');
+  const [status, setStatus] = useState('loading'); // loading | ready | done | error
   const [items, setItems] = useState([]);
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(0);
@@ -48,30 +48,38 @@ export default function QuizEngine() {
     });
   }
 
-  function submit() {
-    let correct = 0;
-    items.forEach((it, idx) => {
+  const total = items.length;
+  const correctCount = useMemo(() => {
+    return items.reduce((acc, it, idx) => {
       if (it.a) {
-        if ((answers[idx] || '').trim().toLowerCase() === it.a.trim().toLowerCase()) correct++;
-      } else if (it.correct) {
+        const given = (answers[idx] || '').trim().toLowerCase();
+        const exp = it.a.trim().toLowerCase();
+        return acc + (given === exp ? 1 : 0);
+      }
+      if (it.correct) {
         const given = [...(answers[idx] || [])].sort();
         const exp = [...it.correct].sort();
-        if (JSON.stringify(given) === JSON.stringify(exp)) correct++;
+        return acc + (JSON.stringify(given) === JSON.stringify(exp) ? 1 : 0);
       }
-    });
-    setScore(correct);
+      return acc;
+    }, 0);
+  }, [answers, items]);
+
+  function submit() {
+    setScore(correctCount);
     setStatus('done');
   }
 
   if (!deptId) return <div style={{ padding: 16 }}>No department</div>;
-  if (status === 'loading') return <div style={{ padding: 16 }}>Loading…</div>;
+  if (status === 'loading') return <div style={{ padding: 16 }}>Loading questions…</div>;
   if (status === 'error') return <div style={{ padding: 16, color: '#f66' }}>Failed to load {uri}</div>;
 
   if (status === 'done') {
+    const pct = total ? Math.round((score / total) * 100) : 0;
     return (
       <div style={{ padding: 16 }}>
         <h2>Quiz Result — {deptId}</h2>
-        <p>Score: {score} / {items.length}</p>
+        <p>Score: {score} / {total} ({pct}%)</p>
         <Link to={`/learn/${deptId}/1`} style={{ color: '#ffd166' }}>Back to lessons</Link>
       </div>
     );
