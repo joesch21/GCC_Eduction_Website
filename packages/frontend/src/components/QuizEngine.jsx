@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 
 function shuffle(arr) {
@@ -10,17 +10,9 @@ function shuffle(arr) {
   return a;
 }
 
-/**
- * Expected seed format (simple):
- * [
- *   {"q": "Question 1?", "a": "Answer"},
- *   ...
- * ]
- * Later we can support multi-choice { choices: [...], correct: [...] }.
- */
 export default function QuizEngine() {
   const { deptId } = useParams();
-  const [status, setStatus] = useState('loading'); // loading | ready | done | error
+  const [status, setStatus] = useState('loading');
   const [items, setItems] = useState([]);
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(0);
@@ -36,7 +28,6 @@ export default function QuizEngine() {
         if (!res.ok) throw new Error(`Cannot load ${uri}`);
         const json = await res.json();
         if (!cancelled) {
-          // light randomization
           setItems(shuffle(json).slice(0, Math.min(10, json.length)));
           setStatus('ready');
         }
@@ -49,29 +40,38 @@ export default function QuizEngine() {
     return () => { cancelled = true; };
   }, [uri]);
 
-  const total = items.length;
-  const correctCount = useMemo(() => {
-    return items.reduce((acc, item, idx) => {
-      if (answers[idx] === item.a) return acc + 1;
-      return acc;
-    }, 0);
-  }, [answers, items]);
+  function toggleChoice(qIdx, cIdx) {
+    setAnswers(a => {
+      const prev = a[qIdx] || [];
+      const has = prev.includes(cIdx);
+      return { ...a, [qIdx]: has ? prev.filter(i => i !== cIdx) : [...prev, cIdx] };
+    });
+  }
 
   function submit() {
-    setScore(correctCount);
+    let correct = 0;
+    items.forEach((it, idx) => {
+      if (it.a) {
+        if ((answers[idx] || '').trim().toLowerCase() === it.a.trim().toLowerCase()) correct++;
+      } else if (it.correct) {
+        const given = [...(answers[idx] || [])].sort();
+        const exp = [...it.correct].sort();
+        if (JSON.stringify(given) === JSON.stringify(exp)) correct++;
+      }
+    });
+    setScore(correct);
     setStatus('done');
   }
 
   if (!deptId) return <div style={{ padding: 16 }}>No department</div>;
-  if (status === 'loading') return <div style={{ padding: 16 }}>Loading questions…</div>;
+  if (status === 'loading') return <div style={{ padding: 16 }}>Loading…</div>;
   if (status === 'error') return <div style={{ padding: 16, color: '#f66' }}>Failed to load {uri}</div>;
 
   if (status === 'done') {
-    const pct = total ? Math.round((score / total) * 100) : 0;
     return (
       <div style={{ padding: 16 }}>
         <h2>Quiz Result — {deptId}</h2>
-        <p>Score: {score} / {total} ({pct}%)</p>
+        <p>Score: {score} / {items.length}</p>
         <Link to={`/learn/${deptId}/1`} style={{ color: '#ffd166' }}>Back to lessons</Link>
       </div>
     );
@@ -84,21 +84,31 @@ export default function QuizEngine() {
         {items.map((it, idx) => (
           <li key={idx} style={{ margin: '12px 0' }}>
             <div style={{ marginBottom: 8 }}>{it.q}</div>
-            <input
-              type="text"
-              placeholder="Type your answer"
-              value={answers[idx] || ''}
-              onChange={e => setAnswers(a => ({ ...a, [idx]: e.target.value }))}
-              style={{
-                width: '100%',
-                maxWidth: 420,
-                padding: 8,
-                background: '#222',
-                color: '#fff',
-                border: '1px solid #444',
-                borderRadius: 6
-              }}
-            />
+            {it.a && (
+              <input
+                type="text"
+                placeholder="Type your answer"
+                value={answers[idx] || ''}
+                onChange={e => setAnswers(a => ({ ...a, [idx]: e.target.value }))}
+                style={{ width: '100%', maxWidth: 420, padding: 8, background: '#222', color: '#fff', border: '1px solid #444', borderRadius: 6 }}
+              />
+            )}
+            {it.choices && (
+              <div>
+                {it.choices.map((choice, cIdx) => (
+                  <label key={cIdx} style={{ display: 'block', margin: '4px 0' }}>
+                    <input
+                      type={it.correct.length === 1 ? 'radio' : 'checkbox'}
+                      name={`q-${idx}`}
+                      value={cIdx}
+                      checked={(answers[idx] || []).includes(cIdx)}
+                      onChange={() => toggleChoice(idx, cIdx)}
+                    />
+                    <span style={{ marginLeft: 6 }}>{choice}</span>
+                  </label>
+                ))}
+              </div>
+            )}
           </li>
         ))}
       </ol>

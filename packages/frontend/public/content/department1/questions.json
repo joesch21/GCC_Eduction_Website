@@ -1,17 +1,4 @@
 [
-  {"q": "Question 1?", "a": "Answer"},
-  {"q": "Question 2?", "a": "Answer"},
-  {"q": "Question 3?", "a": "Answer"},
-  {"q": "Question 4?", "a": "Answer"},
-  {"q": "Question 5?", "a": "Answer"},
-  {"q": "Question 6?", "a": "Answer"},
-  {"q": "Question 7?", "a": "Answer"},
-  {"q": "Question 8?", "a": "Answer"},
-  {"q": "Question 9?", "a": "Answer"},
-  {"q": "Question 10?", "a": "Answer"},
-  {"q": "Question 11?", "a": "Answer"},
-  {"q": "Question 12?", "a": "Answer"},
-  {"q": "Question 13?", "a": "Answer"},
-  {"q": "Question 14?", "a": "Answer"},
-  {"q": "Question 15?", "a": "Answer"}
+  { "q": "Question 1?", "a": "Answer" },
+  { "q": "Which of these are cryptocurrencies?", "choices": ["USD", "Bitcoin", "Ethereum", "Euro"], "correct": [1,2] }
 ]
