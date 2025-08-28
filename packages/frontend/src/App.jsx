@@ -4,10 +4,10 @@ import WalletButton from './components/WalletButton';
 import NetworkGuard from './components/NetworkGuard';
 import MarkdownRenderer from './components/MarkdownRenderer';
 import QuizEngine from './components/QuizEngine';
-import AdminPublisher from './components/AdminPublisher';
 import RewardSummary from './components/RewardSummary';
 import CohortBadge from './components/CohortBadge';
 import { gatingFor } from './lib/gating';
+import AdminPanel from './pages/AdminPanel';
 
 function Placeholder({ text }) { return <div style={{ padding: 16 }}>{text}</div>; }
 
@@ -123,8 +123,8 @@ export default function App() {
           <Route path="/learn" element={<DeptHub address={addr} />} />
           <Route path="/learn/:deptId/:lessonId" element={<DeptLessonPage address={addr} />} />
           <Route path="/quiz/:deptId" element={<QuizEngine />} />
-          <Route path="/dashboard" element={<RewardSummary address={addr} />} />
-          <Route path="/admin" element={<AdminPublisher />} />
+            <Route path="/dashboard" element={<RewardSummary address={addr} />} />
+            <Route path="/admin" element={<AdminPanel address={addr} />} />
           <Route path="/community" element={<Placeholder text="community" />} />
           <Route path="/blog" element={<Placeholder text="blog" />} />
           <Route path="/legal/*" element={<Placeholder text="legal" />} />

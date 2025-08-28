@@ -5,6 +5,9 @@ build/
 .cache/
 out/
 lib/
+# allow source libs in frontend
+!packages/frontend/src/lib/
+!packages/frontend/src/lib/**
 .DS_Store
 .env
 
