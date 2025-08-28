@@ -3,15 +3,12 @@
   "private": true,
   "workspaces": ["packages/*"],
   "scripts": {
-    "dev": "concurrently -k -n SERVER,FRONTEND -c yellow,cyan \"yarn workspace server dev\" \"yarn workspace frontend dev -- --host --port 5173\"",
+    "dev": "node tools/dev.mjs",
     "dev:server": "yarn workspace server dev",
     "dev:frontend": "yarn workspace frontend dev -- --host --port 5173",
     "build": "yarn workspaces foreach -pt run build",
     "format": "echo format",
     "lint": "echo lint"
-  },
-  "devDependencies": {
-    "concurrently": "^9.0.1"
   },
   "packageManager": "yarn@4.9.4"
 }
