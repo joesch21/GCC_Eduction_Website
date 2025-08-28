@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
+import { ethers } from 'ethers';
 import { rewarder } from '../lib/contracts';
 import { totalClaimed } from '../lib/subgraph';
 
-// claims are published per-address in /content/claims/<address>.json
 async function fetchClaim(address) {
   try {
     const res = await fetch(`/content/claims/${address.toLowerCase()}.json`);
     if (!res.ok) return null;
-    return await res.json(); // { domain, types, value, signature }
+    return await res.json();
   } catch { return null; }
 }
 
@@ -29,14 +29,42 @@ export default function RewardSummary({ address }) {
   }, [address]);
 
   async function doClaim() {
-    if (!claim) return alert('No claim found for this address yet.');
+    if (!claim) return alert('No claim found for this address.');
+
     try {
       setBusy(true);
-      const p = new (await import('ethers')).ethers.BrowserProvider(window.ethereum);
+      const expectedChainId = Number(import.meta.env.VITE_CHAIN_ID || 56);
+      const expectedContract = (import.meta.env.VITE_REWARDER_ADDRESS || '').toLowerCase();
+
+      // Validate EIP-712 payload
+      if (!claim.domain || !claim.value || !claim.signature) throw new Error('Malformed claim JSON');
+      if (Number(claim.domain.chainId) !== expectedChainId) throw new Error('Wrong chainId in claim');
+      if ((claim.domain.verifyingContract || '').toLowerCase() !== expectedContract) throw new Error('Wrong verifyingContract');
+      if (claim.value.to.toLowerCase() !== address.toLowerCase()) throw new Error('Claim is not for this wallet');
+
+      const now = Math.floor(Date.now() / 1000);
+      if (Number(claim.value.deadline) <= now) throw new Error('Claim expired');
+
+      // Check nonce on-chain equals payload.nonce
+      const p = new ethers.BrowserProvider(window.ethereum);
       const signer = await p.getSigner();
-      const c = rewarder(p).connect(signer);
-      const { to, amount, deadline, nonce } = claim.value;
-      const tx = await c.claim(to, amount, deadline, nonce, claim.signature);
+      const net = await p.getNetwork();
+      if (net.chainId !== BigInt(expectedChainId)) {
+        await p.send('wallet_switchEthereumChain', [{ chainId: '0x' + expectedChainId.toString(16) }]);
+      }
+      const c = rewarder(signer);
+      const currentNonce = await c.nonces(address);
+      if (currentNonce.toString() !== String(claim.value.nonce)) {
+        throw new Error(`Nonce mismatch (on-chain ${currentNonce} vs payload ${claim.value.nonce})`);
+      }
+
+      const tx = await c.claim(
+        claim.value.to,
+        claim.value.amount,
+        claim.value.deadline,
+        claim.value.nonce,
+        claim.signature
+      );
       setTxh(tx.hash);
       await tx.wait();
       alert('Claim successful!');
@@ -59,8 +87,7 @@ export default function RewardSummary({ address }) {
         {txh && <div style={{ marginTop: 6 }}>Tx: {txh}</div>}
       </div>
       <small style={{ color:'#aaa' }}>
-        Claims are signed by the Rewarder admin (EIP-712). The contract verifies
-        the signature and prevents nonce replay.
+        We validate chain, contract, nonce and deadline before sending your claim.
       </small>
     </div>
   );
