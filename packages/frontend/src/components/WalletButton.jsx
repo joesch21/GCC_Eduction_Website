@@ -7,7 +7,7 @@ const CHAIN_ID_HEX = '0x38'; // 56
 const RPC_URL = import.meta.env.VITE_RPC_URL || 'https://bsc-dataseed.binance.org';
 const EXPLORER_URL = import.meta.env.VITE_EXPLORER_URL || 'https://bscscan.com';
 
-export default function WalletButton() {
+export default function WalletButton(props) {
   const [address, setAddress] = useState();
   const mounted = useRef(true);
 
@@ -50,6 +50,7 @@ export default function WalletButton() {
       await ensureBSC();
       const accounts = await provider.send('eth_requestAccounts', []);
       if (mounted.current) setAddress(accounts[0]);
+      props?.onAddressChange?.(accounts[0]);
     } catch (e) {
       console.error('[wallet connect] error:', e);
       alert(e?.message || 'Wallet connect failed.');
@@ -58,9 +59,9 @@ export default function WalletButton() {
 
   function disconnect() {
     if (mounted.current) setAddress(undefined);
+    props?.onAddressChange?.(undefined);
   }
 
   const label = address ? `${address.slice(0, 6)}…${address.slice(-4)}` : 'Connect Wallet';
   return <button onClick={address ? disconnect : connect}>{label}</button>;
 }
-

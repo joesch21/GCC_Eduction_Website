@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Link, useParams, useNavigate } from 'react-router-dom';
+import { useState } from 'react';
 import WalletButton from './components/WalletButton';
 import NetworkGuard from './components/NetworkGuard';
 import MarkdownRenderer from './components/MarkdownRenderer';
@@ -13,10 +14,13 @@ function Placeholder({ text }) { return <div style={{ padding: 16 }}>{text}</div
 const DEPTS = ['department1','department2','department3','department4'];
 const LESSONS = ['1','2','3'];
 
-function DeptHub() {
+function DeptHub({ address }) {
   return (
     <div style={{ padding: 16 }}>
       <h2>Learn Hub</h2>
+      <div style={{ margin: '12px 0' }}>
+        <CohortBadge address={address} cohortId={1} cap={100} />
+      </div>
       <ul>
         {DEPTS.map(d => {
           const unlocked = isDeptUnlocked(d);
@@ -27,7 +31,7 @@ function DeptHub() {
               <Link to={unlocked ? `/learn/${d}/1` : '#'} style={{ color: unlocked ? '#ffd166' : '#888' }}>
                 {d}
               </Link>
-              <span style={{ marginLeft: 8 }}><CohortBadge status={status} /></span>
+              <span style={{ marginLeft: 8, fontSize: 12 }}>{status}</span>
               {unlocked && <span style={{ marginLeft: 8 }}><Link to={`/quiz/${d}`}>Quiz</Link></span>}
             </li>
           );
@@ -84,19 +88,21 @@ function DeptLessonPage() {
 }
 
 export default function App() {
+  const [addr, setAddr] = useState();
+
   return (
     <BrowserRouter>
       <NetworkGuard>
         <div style={{ padding: 12 }}>
-          <WalletButton />
+          <WalletButton onAddressChange={setAddr} />
         </div>
         <Routes>
           <Route path="/" element={<Placeholder text="home" />} />
           <Route path="/profile" element={<Placeholder text="profile" />} />
-          <Route path="/learn" element={<DeptHub />} />
+          <Route path="/learn" element={<DeptHub address={addr} />} />
           <Route path="/learn/:deptId/:lessonId" element={<DeptLessonPage />} />
           <Route path="/quiz/:deptId" element={<QuizEngine />} />
-          <Route path="/dashboard" element={<RewardSummary />} />
+          <Route path="/dashboard" element={<RewardSummary address={addr} />} />
           <Route path="/admin" element={<AdminPublisher />} />
           <Route path="/community" element={<Placeholder text="community" />} />
           <Route path="/blog" element={<Placeholder text="blog" />} />
