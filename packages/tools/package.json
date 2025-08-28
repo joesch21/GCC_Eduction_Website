@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "private": true,
   "bin": {
+    "claim-signer": "claim-signer.js",
+    "attest-progress": "attest-progress.js",
     "publisher": "index.js"
-  }
+  },
+  "dependencies": {
+    "ethers": "^6.15.0"
+  },
+  "type": "module"
 }

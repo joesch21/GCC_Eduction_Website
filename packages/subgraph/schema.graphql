@@ -29,6 +29,12 @@ type ProgressAttested @entity {
   stateRoot: Bytes!
 }
 
+type Completed @entity {
+  id: ID!
+  learner: Bytes!
+  deptId: BigInt!
+}
+
 type Claimed @entity {
   id: ID!
   to: Bytes!

@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route, Link, useParams, useNavigate } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import WalletButton from './components/WalletButton';
 import NetworkGuard from './components/NetworkGuard';
 import MarkdownRenderer from './components/MarkdownRenderer';
@@ -7,7 +7,7 @@ import QuizEngine from './components/QuizEngine';
 import AdminPublisher from './components/AdminPublisher';
 import RewardSummary from './components/RewardSummary';
 import CohortBadge from './components/CohortBadge';
-import { isDeptUnlocked, isDeptCompleted } from './store/progress';
+import { gatingFor } from './lib/gating';
 
 function Placeholder({ text }) { return <div style={{ padding: 16 }}>{text}</div>; }
 
@@ -15,6 +15,17 @@ const DEPTS = ['department1','department2','department3','department4'];
 const LESSONS = ['1','2','3'];
 
 function DeptHub({ address }) {
+  const [gating, setGating] = useState({ unlocked: { department1: true }, completed: {} });
+
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      const g = await gatingFor(address);
+      if (live) setGating(g);
+    })();
+    return () => { live = false; };
+  }, [address]);
+
   return (
     <div style={{ padding: 16 }}>
       <h2>Learn Hub</h2>
@@ -23,8 +34,8 @@ function DeptHub({ address }) {
       </div>
       <ul>
         {DEPTS.map(d => {
-          const unlocked = isDeptUnlocked(d);
-          const done = isDeptCompleted(d);
+          const unlocked = gating.unlocked[d];
+          const done = gating.completed[d];
           const status = done ? 'completed' : unlocked ? 'unlocked' : 'locked';
           return (
             <li key={d} style={{ margin: '8px 0' }}>
@@ -64,13 +75,23 @@ function DeptNav({ deptId, active }) {
   );
 }
 
-function DeptLessonPage() {
+function DeptLessonPage({ address }) {
   const { deptId, lessonId } = useParams();
   const navigate = useNavigate();
+  const [gating, setGating] = useState({ unlocked: { department1: true }, completed: {} });
+
+  useEffect(() => {
+    let live = true;
+    (async () => {
+      const g = await gatingFor(address);
+      if (live) setGating(g);
+    })();
+    return () => { live = false; };
+  }, [address]);
+
   if (!DEPTS.includes(deptId || '')) return <Placeholder text="Unknown department" />;
 
-  // Gate by unlock
-  if (!isDeptUnlocked(deptId)) return <Placeholder text="This department is locked. Pass the previous quiz to unlock." />;
+  if (!gating.unlocked[deptId]) return <Placeholder text="This department is locked. Pass the previous quiz to unlock." />;
 
   if (!LESSONS.includes(lessonId || '')) {
     navigate(`/learn/${deptId}/1`, { replace: true });
@@ -100,7 +121,7 @@ export default function App() {
           <Route path="/" element={<Placeholder text="home" />} />
           <Route path="/profile" element={<Placeholder text="profile" />} />
           <Route path="/learn" element={<DeptHub address={addr} />} />
-          <Route path="/learn/:deptId/:lessonId" element={<DeptLessonPage />} />
+          <Route path="/learn/:deptId/:lessonId" element={<DeptLessonPage address={addr} />} />
           <Route path="/quiz/:deptId" element={<QuizEngine />} />
           <Route path="/dashboard" element={<RewardSummary address={addr} />} />
           <Route path="/admin" element={<AdminPublisher />} />

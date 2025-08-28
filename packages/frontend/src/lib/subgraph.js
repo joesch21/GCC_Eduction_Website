@@ -44,3 +44,13 @@ export async function totalClaimed(addr) {
   const data = await gql(q, { addr: addr.toLowerCase() });
   return data.claimeds.reduce((sum, c) => sum + Number(c.amount), 0);
 }
+
+export async function completedByDept(addr) {
+  const q = `
+    query($addr: Bytes!) {
+      completeds(first: 1000, where: { learner: $addr }) { deptId }
+    }
+  `;
+  const d = await gql(q, { addr: addr.toLowerCase() });
+  return d.completeds.map(c => Number(c.deptId));
+}

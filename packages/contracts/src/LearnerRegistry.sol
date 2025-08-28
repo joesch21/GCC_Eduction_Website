@@ -11,6 +11,7 @@ contract LearnerRegistry is AccessControl, ReentrancyGuard {
     event Committed(address indexed learner, bytes32 answerHash, uint256 deptId);
     event Revealed(address indexed learner, uint256 deptId);
     event ProgressAttested(address indexed learner, bytes32 stateRoot);
+    event Completed(address indexed learner, uint256 deptId);
 
     constructor() {
         _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
@@ -30,12 +31,12 @@ contract LearnerRegistry is AccessControl, ReentrancyGuard {
         emit Revealed(msg.sender, deptId);
     }
 
-    function completeDept(uint256 /*deptId*/) external {
-        // stub
-    }
-
     // Mode B (off-chain attest)
     function attestProgress(address learner, bytes32 stateRoot) external onlyRole(ADMIN_ROLE) {
         emit ProgressAttested(learner, stateRoot);
+    }
+
+    function markCompleted(address learner, uint256 deptId) external onlyRole(ADMIN_ROLE) {
+        emit Completed(learner, deptId);
     }
 }
