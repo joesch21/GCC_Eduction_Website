@@ -38,6 +38,7 @@ dataSources:
         - Committed
         - Revealed
         - ProgressAttested
+        - Completed
       abis:
         - name: LearnerRegistry
           file: ./abis/LearnerRegistry.json
@@ -50,6 +51,8 @@ dataSources:
           handler: handleRevealed
         - event: ProgressAttested(address,bytes32)
           handler: handleProgressAttested
+        - event: Completed(address,uint256)
+          handler: handleCompleted
       file: ./src/mappings/learner.ts
   - kind: ethereum
     name: LearnToEarnRewarder
