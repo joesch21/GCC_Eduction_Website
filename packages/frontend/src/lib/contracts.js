@@ -24,3 +24,9 @@ export function rewarder(signerOrProvider) {
   if (!addr) throw new Error('VITE_REWARDER_ADDRESS missing');
   return new ethers.Contract(addr, REWARDER, signerOrProvider);
 }
+
+export async function markCompletedTx(learner, deptId) {
+  const signer = await getSigner();
+  const reg = learnerRegistry(signer);
+  return reg.markCompleted(learner, BigInt(deptId));
+}

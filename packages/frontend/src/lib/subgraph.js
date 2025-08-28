@@ -54,3 +54,23 @@ export async function completedByDept(addr) {
   const d = await gql(q, { addr: addr.toLowerCase() });
   return d.completeds.map(c => Number(c.deptId));
 }
+
+export async function listCompletions({ first = 100, skip = 0, learner }) {
+  const q = `
+    query($first: Int!, $skip: Int!, $learner: Bytes) {
+      completeds(first: $first, skip: $skip, orderBy: id, orderDirection: desc,
+        where: { learner: $learner }) {
+        id
+        learner
+        deptId
+      }
+    }
+  `;
+  const vars = { first, skip, learner: learner ? learner.toLowerCase() : null };
+  const data = await gql(q, vars);
+  return data.completeds.map(c => ({ id: c.id, learner: c.learner, deptId: Number(c.deptId) }));
+}
+
+export async function completionsByLearner(learner) {
+  return listCompletions({ learner, first: 1000, skip: 0 });
+}
