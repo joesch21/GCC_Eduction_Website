@@ -4,14 +4,38 @@ import NetworkGuard from './components/NetworkGuard';
 import MarkdownRenderer from './components/MarkdownRenderer';
 import QuizEngine from './components/QuizEngine';
 import AdminPublisher from './components/AdminPublisher';
-import ProgressBar from './components/ProgressBar';
-import CohortBadge from './components/CohortBadge';
 import RewardSummary from './components/RewardSummary';
+import CohortBadge from './components/CohortBadge';
+import { isDeptUnlocked, isDeptCompleted } from './store/progress';
 
 function Placeholder({ text }) { return <div style={{ padding: 16 }}>{text}</div>; }
 
 const DEPTS = ['department1','department2','department3','department4'];
 const LESSONS = ['1','2','3'];
+
+function DeptHub() {
+  return (
+    <div style={{ padding: 16 }}>
+      <h2>Learn Hub</h2>
+      <ul>
+        {DEPTS.map(d => {
+          const unlocked = isDeptUnlocked(d);
+          const done = isDeptCompleted(d);
+          const status = done ? 'completed' : unlocked ? 'unlocked' : 'locked';
+          return (
+            <li key={d} style={{ margin: '8px 0' }}>
+              <Link to={unlocked ? `/learn/${d}/1` : '#'} style={{ color: unlocked ? '#ffd166' : '#888' }}>
+                {d}
+              </Link>
+              <span style={{ marginLeft: 8 }}><CohortBadge status={status} /></span>
+              {unlocked && <span style={{ marginLeft: 8 }}><Link to={`/quiz/${d}`}>Quiz</Link></span>}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
+  );
+}
 
 function DeptNav({ deptId, active }) {
   return (
@@ -40,8 +64,11 @@ function DeptLessonPage() {
   const { deptId, lessonId } = useParams();
   const navigate = useNavigate();
   if (!DEPTS.includes(deptId || '')) return <Placeholder text="Unknown department" />;
+
+  // Gate by unlock
+  if (!isDeptUnlocked(deptId)) return <Placeholder text="This department is locked. Pass the previous quiz to unlock." />;
+
   if (!LESSONS.includes(lessonId || '')) {
-    // default to lesson 1 if missing/bad
     navigate(`/learn/${deptId}/1`, { replace: true });
     return null;
   }
@@ -66,7 +93,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Placeholder text="home" />} />
           <Route path="/profile" element={<Placeholder text="profile" />} />
-          <Route path="/learn" element={<Placeholder text="Pick a department: /learn/department1/1" />} />
+          <Route path="/learn" element={<DeptHub />} />
           <Route path="/learn/:deptId/:lessonId" element={<DeptLessonPage />} />
           <Route path="/quiz/:deptId" element={<QuizEngine />} />
           <Route path="/dashboard" element={<RewardSummary />} />
@@ -79,4 +106,3 @@ export default function App() {
     </BrowserRouter>
   );
 }
-
