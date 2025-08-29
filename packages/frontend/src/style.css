@@ -21,3 +21,65 @@ button {
   cursor: pointer;
 }
 button:hover { background: #444; }
+
+.hero {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.hero-logo {
+  width: 240px;
+  max-width: 80%;
+  margin: auto;
+  display: block;
+  animation: pulse 8s infinite ease-in-out;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.03); }
+}
+
+.hero-tagline {
+  margin-top: 20px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #FFC107;
+}
+
+.hero-ctas {
+  margin-top: 30px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.cta-primary {
+  background: #FFC107;
+  color: #000;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+  box-shadow: none;
+}
+.cta-primary:hover {
+  box-shadow: 0 0 8px #FFC107;
+}
+
+.cta-secondary {
+  border: 2px solid #FFC107;
+  color: #FFC107;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: bold;
+}
+.cta-secondary:hover {
+  box-shadow: 0 0 8px #FFC107;
+}
+
+.hero-status {
+  margin-top: 40px;
+  font-size: 0.9rem;
+  color: #ccc;
+}
