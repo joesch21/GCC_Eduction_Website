@@ -1,7 +1,9 @@
 {
   "name": "lythera-ecosystem",
   "private": true,
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "dev": "node tools/dev.mjs",
     "dev:server": "yarn workspace server dev",
