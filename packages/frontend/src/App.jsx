@@ -35,7 +35,16 @@ function DeptNav({ deptId, active }) {
           </Link>
         );
       })}
-      <Link to={`/quiz/${deptId}`} style={{ marginLeft: 'auto', color: '#ffd166' }}>
+      <Link
+        to={`/quiz/${deptId}`}
+        style={{
+          marginLeft: 'auto',
+          color: '#ffd166',
+          textDecoration: locked ? 'line-through' : 'none',
+          pointerEvents: locked ? 'none' : 'auto',
+          opacity: locked ? 0.5 : 1
+        }}
+      >
         {locked ? 'Locked (pass previous dept)' : 'Take Quiz →'}
       </Link>
     </div>
