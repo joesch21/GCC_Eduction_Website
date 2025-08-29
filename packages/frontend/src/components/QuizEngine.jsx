@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { incAttempt, markPassed } from '../utils/storage';
+import Toast from './Toast';
 
 function shuffle(arr) {
   const a = arr.slice();
@@ -24,6 +25,7 @@ export default function QuizEngine({ passPct = 70, timeLimitSec = 480 }) {
   const [answers, setAnswers] = useState({});
   const [score, setScore] = useState(0);
   const [left, setLeft] = useState(timeLimitSec);
+  const [toast, setToast] = useState(null);
 
   const uri = deptId ? `/content/${deptId}/questions.json` : null;
 
@@ -92,15 +94,19 @@ export default function QuizEngine({ passPct = 70, timeLimitSec = 480 }) {
       markPassed(deptId, { score: s, pct: Math.round(pct), attempts });
     }
     setStatus('done');
+    setToast({ message: pass ? 'Quiz passed!' : `Need ${passPct}% to pass`, type: pass ? 'success' : 'error' });
   }
 
+  const toastEl = toast ? <Toast {...toast} onDone={() => setToast(null)} /> : null;
+
   if (!deptId) return <div style={{ padding: 16 }}>No department</div>;
-  if (status === 'loading') return <div style={{ padding: 16 }}>Loading questions…</div>;
-  if (status === 'error') return <div style={{ padding: 16, color: '#f66' }}>Failed to load {uri}</div>;
+  if (status === 'loading') return <div style={{ padding: 16 }}>{toastEl}Loading questions…</div>;
+  if (status === 'error') return <div style={{ padding: 16, color: '#f66' }}>{toastEl}Failed to load {uri}</div>;
 
   if (status === 'expired') {
     return (
       <div style={{ padding: 16 }}>
+        {toastEl}
         <h2>Time up — {deptId}</h2>
         <p>The time limit has expired. You can retry the quiz.</p>
         <button onClick={() => navigate(`/quiz/${deptId}`)}>Retry</button>
@@ -113,6 +119,7 @@ export default function QuizEngine({ passPct = 70, timeLimitSec = 480 }) {
     const pass = pct >= passPct;
     return (
       <div style={{ padding: 16 }}>
+        {toastEl}
         <h2>Quiz Result — {deptId}</h2>
         <p>Score: {score} / {total} ({pct}%)</p>
         <p>{pass ? '✅ Passed! Next department unlocked.' : `❌ Need ${passPct}% to pass. Try again.`}</p>
@@ -128,6 +135,7 @@ export default function QuizEngine({ passPct = 70, timeLimitSec = 480 }) {
 
   return (
     <div style={{ padding: 16 }}>
+      {toastEl}
       <h2>Quiz — {deptId}</h2>
       <div style={{ marginBottom: 8, opacity: 0.8 }}>Time left: {mm}:{ss}</div>
       <ol>

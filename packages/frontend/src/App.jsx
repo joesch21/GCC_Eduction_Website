@@ -6,6 +6,8 @@ import QuizEngine from './components/QuizEngine';
 import AdminPublisher from './components/AdminPublisher';
 import RewardSummary from './components/RewardSummary';
 import ChainStatus from './components/ChainStatus';
+import Layout from './components/Layout';
+import Toast from './components/Toast';
 import { hasPassed } from './utils/storage';
 
 function Placeholder({ text }) { return <div style={{ padding: 16 }}>{text}</div>; }
@@ -64,14 +66,16 @@ function DeptLessonPage() {
   const uri = `/content/${deptId}/lesson${lessonId}.md`;
   return (
     <div>
-      <div style={{ padding: 12, display: 'flex', alignItems: 'center' }}>
-        <WalletButton />
-        <ChainStatus />
-      </div>
+      {locked && (
+        <Toast message="Locked. Pass the previous department’s quiz to unlock." type="warn" />
+      )}
       <DeptNav deptId={deptId} active={lessonId} />
       <div style={{ padding: 16 }}>
-        {locked ? <em>Locked. Pass the previous department’s quiz to unlock.</em> :
-          <MarkdownRenderer uri={uri} title={`${deptId} • Lesson ${lessonId}`} />}
+        {locked ? (
+          <em>Locked. Pass the previous department’s quiz to unlock.</em>
+        ) : (
+          <MarkdownRenderer uri={uri} title={`${deptId} • Lesson ${lessonId}`} />
+        )}
       </div>
     </div>
   );
@@ -81,18 +85,20 @@ export default function App() {
   return (
     <BrowserRouter>
       <NetworkGuard>
-        <Routes>
-          <Route path="/" element={<Placeholder text="home" />} />
-          <Route path="/profile" element={<Placeholder text="profile" />} />
-          <Route path="/learn" element={<Placeholder text="Pick a department: /learn/department1/1" />} />
-          <Route path="/learn/:deptId/:lessonId" element={<DeptLessonPage />} />
-          <Route path="/quiz/:deptId" element={<QuizEngine passPct={70} timeLimitSec={480} />} />
-          <Route path="/dashboard" element={<RewardSummary />} />
-          <Route path="/admin" element={<AdminPublisher />} />
-          <Route path="/community" element={<Placeholder text="community" />} />
-          <Route path="/blog" element={<Placeholder text="blog" />} />
-          <Route path="/legal/*" element={<Placeholder text="legal" />} />
-        </Routes>
+        <Layout headerRight={<><WalletButton /><ChainStatus /></>}>
+          <Routes>
+            <Route path="/" element={<Placeholder text="home" />} />
+            <Route path="/profile" element={<Placeholder text="profile" />} />
+            <Route path="/learn" element={<Placeholder text="Pick a department: /learn/department1/1" />} />
+            <Route path="/learn/:deptId/:lessonId" element={<DeptLessonPage />} />
+            <Route path="/quiz/:deptId" element={<QuizEngine passPct={70} timeLimitSec={480} />} />
+            <Route path="/dashboard" element={<RewardSummary />} />
+            <Route path="/admin" element={<AdminPublisher />} />
+            <Route path="/community" element={<Placeholder text="community" />} />
+            <Route path="/blog" element={<Placeholder text="blog" />} />
+            <Route path="/legal/*" element={<Placeholder text="legal" />} />
+          </Routes>
+        </Layout>
       </NetworkGuard>
     </BrowserRouter>
   );
