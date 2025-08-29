@@ -8,6 +8,7 @@ import RewardSummary from './components/RewardSummary';
 import ChainStatus from './components/ChainStatus';
 import Layout from './components/Layout';
 import Toast from './components/Toast';
+import Hero from './components/Hero';
 import { hasPassed } from './utils/storage';
 
 function Placeholder({ text }) { return <div style={{ padding: 16 }}>{text}</div>; }
@@ -87,7 +88,7 @@ export default function App() {
       <NetworkGuard>
         <Layout headerRight={<><WalletButton /><ChainStatus /></>}>
           <Routes>
-            <Route path="/" element={<Placeholder text="home" />} />
+            <Route path="/" element={<Hero />} />
             <Route path="/profile" element={<Placeholder text="profile" />} />
             <Route path="/learn" element={<Placeholder text="Pick a department: /learn/department1/1" />} />
             <Route path="/learn/:deptId/:lessonId" element={<DeptLessonPage />} />
