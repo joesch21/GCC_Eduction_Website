@@ -46,7 +46,6 @@ export default function Hero() {
   return (
     <section className="hero full-viewport" aria-labelledby="hero-title">
       <div className="container" style={{ textAlign: 'center' }}>
-        {/* Logo (mobile-first sizing comes from .hero-logo) */}
         <img
           src="/lythera.jpeg"
           alt="The Lythera Ecosystem"
@@ -57,15 +56,14 @@ export default function Hero() {
           decoding="async"
         />
 
-        {/* Title + Tagline use responsive clamp() sizes from CSS */}
         <h1 id="hero-title" className="hero-title">
           THE LYTHERA ECOSYSTEM
         </h1>
+
         <p className="hero-tagline">
           Learn. Earn. Belong. The Lythera Ecosystem turns knowledge into $GCC rewards.
         </p>
 
-        {/* Primary Actions */}
         <div className="hero-ctas">
           <Link to="/learn/department1/1" className="cta-primary" role="button" aria-label="Enter the Academy">
             Enter the Academy
@@ -75,12 +73,10 @@ export default function Hero() {
           </Link>
         </div>
 
-        {/* Status pill (uses .pill utility) */}
         <div style={{ marginTop: 16 }}>
           <span className="pill" aria-live="polite">{status}</span>
         </div>
 
-        {/* Optional small meta */}
         <div className="hero-status">
           Mobile-first • Dark mode • BSC (56)
         </div>
@@ -88,3 +84,4 @@ export default function Hero() {
     </section>
   );
 }
+
